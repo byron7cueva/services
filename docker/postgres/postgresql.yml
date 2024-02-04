@@ -1,0 +1,30 @@
+version: '3'
+
+# docker network create "localnet"
+networks:
+  localnet:
+    name: localnet
+    external: true
+
+volumes:
+  postgres_data:
+      driver: local
+      driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: '/run/media/byron/Vm/volumes/postgresql'
+
+services:
+  postgres:
+      image: postgres:16.1
+      container_name: postgres
+      ports:
+      - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      networks:
+      - localnet

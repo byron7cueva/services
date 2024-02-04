@@ -1,0 +1,42 @@
+version: '3.7'
+
+networks:
+  localnet:
+    name: localnet
+    external: true
+
+volumes:
+  keycloak_themes:
+      driver: local
+      driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: '/run/media/byron/Vm/volumes/keycloak/themes'
+  keycloak_providers:
+      driver: local
+      driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: '/run/media/byron/Vm/volumes/keycloak/providers'
+
+services:
+  keycloak:
+      image: quay.io/keycloak/keycloak:23.0.6
+      container_name: keycloak
+      command:
+      - start-dev
+      volumes:
+        - ./keycloak.conf:/opt/keycloak/conf/keycloak.conf
+        - keycloak_themes:/opt/keycloak/themes
+        - keycloak_providers:/opt/keycloak/providers
+      environment:
+        KEYCLOAK_ADMIN: admin
+        KEYCLOAK_ADMIN_PASSWORD: admin
+        PROXY_ADDRESS_FORWARDING: "true"
+        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+        #JDBC_PARAMS: "ssl=true"
+      ports:
+        - 8080:8080
+
+      networks:
+      - localnet

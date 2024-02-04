@@ -1,0 +1,18 @@
+version: '3'
+
+volumes:
+  jdk_path:
+      driver: local
+      driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: '/run/media/byron/Code/java/runtime/jdk-21'
+
+services:
+  java-environment:
+      image: java-environment:1.0
+      container_name: java-environment
+      ports:
+      - "8080:8080"
+      volumes:
+        - jdk_path:/opt/java/openjdk
