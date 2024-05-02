@@ -1,9 +1,9 @@
 version: '3'
 
-# docker network create "localnet"
+# docker network create "devnet"
 networks:
-  localnet:
-    name: localnet
+  devnet:
+    name: devnet
     external: true
 
 volumes:
@@ -12,11 +12,11 @@ volumes:
       driver_opts:
         type: 'none'
         o: 'bind'
-        device: '/run/media/byron/Vm/volumes/postgresql'
+        device: '/run/media/bcueva/volumes/volume/postgres'
 
 services:
   postgres:
-      image: postgres:16.1
+      image: postgres:16.2
       container_name: postgres
       ports:
       - "5432:5432"
@@ -27,4 +27,4 @@ services:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
       networks:
-      - localnet
+      - devnet
