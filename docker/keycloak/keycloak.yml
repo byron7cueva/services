@@ -1,8 +1,8 @@
 version: '3.7'
 
 networks:
-  localnet:
-    name: localnet
+  devnet:
+    name: devnet
     external: true
 
 volumes:
@@ -11,17 +11,17 @@ volumes:
       driver_opts:
         type: 'none'
         o: 'bind'
-        device: '/run/media/byron/Vm/volumes/keycloak/themes'
+        device: '/run/media/bcueva/volumes/volume/keycloak/themes'
   keycloak_providers:
       driver: local
       driver_opts:
         type: 'none'
         o: 'bind'
-        device: '/run/media/byron/Vm/volumes/keycloak/providers'
+        device: '/run/media/bcueva/volumes/volume/keycloak/providers'
 
 services:
   keycloak:
-      image: quay.io/keycloak/keycloak:23.0.6
+      image: quay.io/keycloak/keycloak:25.0.1
       container_name: keycloak
       command:
       - start-dev
@@ -39,4 +39,4 @@ services:
         - 8080:8080
 
       networks:
-      - localnet
+      - devnet
