@@ -1,0 +1,60 @@
+# Documentation https://hub.docker.com/_/postgres/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpm-db-postgres
+  namespace: databases
+  labels:
+    app: dpm-db-postgres
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpm-db-postgres
+  template:
+    metadata:
+      labels:
+        app: dpm-db-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16.2
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 4Gi
+            requests:
+              cpu: 500m
+              memory: 250Mi
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: sct-db-postgres
+                  key: db_name
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sct-db-postgres
+                  key: db_username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sct-db-postgres
+                  key: db_password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: vlm-db-postgres
+      volumes:
+        - name: vlm-db-postgres
+          persistentVolumeClaim:
+            claimName: pvc-db-postgres

@@ -1,3 +1,6 @@
+/* List databases */
+SELECT datname FROM pg_database;
+
 /* Creacte database */
 SET TIME ZONE 'America/Guayaquil';
 ALTER DATABASE postgres SET timezone TO 'America/Guayaquil';
