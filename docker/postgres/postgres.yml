@@ -10,11 +10,11 @@ volumes:
       driver_opts:
         type: 'none'
         o: 'bind'
-        device: '/run/media/bcueva/volumes/volume/postgres'
+        device: '/media/bcueva/volumes/volume/postgres'
 
 services:
   postgres:
-      image: postgres:16.2
+      image: postgres:17.2-alpine3.20
       container_name: postgres
       ports:
       - "5432:5432"

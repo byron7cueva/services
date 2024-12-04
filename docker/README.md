@@ -1,4 +1,5 @@
 # Run services
 
-docker-compose -f postgresql.yml up -d
-docker-compose -f keycloak.yml up -d
+docker compose -f postgres.yml up -d
+docker compose -f keycloak.yml up -d
+docker compose -f nginx.yml up -d
