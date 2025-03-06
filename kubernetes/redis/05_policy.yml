@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bm2c-redis-np
+  namespace: bm2c-db-nmp
+spec:
+  podSelector:
+    matchLabels:
+      app: bm2c-redis
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 6379

@@ -1,0 +1,12 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: bm2c-redis-cfm
+  namespace: bm2c-db-nmp
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    protected-mode no
+    port 6379
+    timeout 300
+    tcp-keepalive 60

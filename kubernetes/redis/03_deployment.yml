@@ -1,0 +1,41 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bm2c-redis-dpm
+  namespace: bm2c-db-nmp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bm2c-redis
+  template:
+    metadata:
+      labels:
+        app: bm2c-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.4.0
+        args: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-config-volume
+          mountPath: /usr/local/etc/redis/redis.conf
+          subPath: redis.conf
+        - name: redis-storage
+          mountPath: /data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: redis-config-volume
+        configMap:
+          name: bm2c-redis-cfm
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: bm2c-redis-pvc

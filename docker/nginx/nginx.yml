@@ -6,6 +6,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./config/cert.pem:/etc/nginx/ssl/cert.pem
-      - ./config/key.pem:/etc/nginx/ssl/key.pem
+      - ./config/server-cert.pem:/etc/nginx/ssl/cert.pem
+      - ./config/server-key.pem:/etc/nginx/ssl/key.pem
       - ./config/nginx.conf:/etc/nginx/nginx.conf 

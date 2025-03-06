@@ -1,0 +1,28 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: bm2c-redis-vlm
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    path: /run/media/bcueva/volumes/nfs/redis
+    server: worker
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  storageClassName: bm2c-redis-nfs-sc
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: bm2c-redis-pvc
+  namespace: bm2c-db-nmp
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: bm2c-redis-nfs-sc

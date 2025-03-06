@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: bm2c-redis-svc
+  namespace: bm2c-db-nmp
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: bm2c-redis

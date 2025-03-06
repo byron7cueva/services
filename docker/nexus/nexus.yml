@@ -1,0 +1,12 @@
+version: "3"
+services:
+  nexus:
+    image: sonatype/nexus3:3.77.2-alpine
+    container_name: nexus
+    volumes:
+      - "nexus-data:/media/bcueva/volumes/volume/nexus"
+    ports:
+      - "8081:8081"
+      - "8085:8085"
+volumes:
+  nexus-data: {}
