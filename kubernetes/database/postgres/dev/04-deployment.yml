@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dpm-db-postgres
+  name: dpm-postgres
   namespace: databases
   labels:
-    app: dpm-db-postgres
+    app: dpm-postgres
 spec:
   strategy:
     rollingUpdate:
@@ -15,15 +15,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dpm-db-postgres
+      app: dpm-postgres
   template:
     metadata:
       labels:
-        app: dpm-db-postgres
+        app: dpm-postgres
     spec:
       containers:
         - name: postgres
-          image: postgres:16.2
+          image: postgres:17.5-alpine3.22
           resources:
             limits:
               cpu: 4000m
@@ -37,24 +37,24 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: sct-db-postgres
+                  name: sct-postgres
                   key: db_name
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: sct-db-postgres
+                  name: sct-postgres
                   key: db_username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: sct-db-postgres
+                  name: sct-postgres
                   key: db_password
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: vlm-db-postgres
+              name: vlm-nfs-postgres
       volumes:
-        - name: vlm-db-postgres
+        - name: vlm-nfs-postgres
           persistentVolumeClaim:
-            claimName: pvc-db-postgres
+            claimName: pvc-postgres

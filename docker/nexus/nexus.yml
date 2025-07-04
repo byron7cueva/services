@@ -1,12 +1,24 @@
-version: "3"
 services:
   nexus:
-    image: sonatype/nexus3:3.77.2-alpine
+    image: sonatype/nexus3:3.81.1-alpine
     container_name: nexus
     volumes:
-      - "nexus-data:/media/bcueva/volumes/volume/nexus"
+      - "nexus-data:/media/bcueva/volumes/volume/nexus/nexus-data"
     ports:
       - "8081:8081"
-      - "8085:8085"
+      - "5000:5000"
+
+  nginx:
+    image: nginx:stable
+    ports:
+      - 443:443
+      - 5001:5001
+    volumes:
+      - ./config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./cert/nexus.crt:/etc/nginx/certs/nexus.crt
+      - ./cert/nexus.key:/etc/nginx/certs/nexus.key
+    depends_on:
+      - nexus
+
 volumes:
   nexus-data: {}

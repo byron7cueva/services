@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: red
+  namespace: utils
+spec:
+  containers:
+  - name: red-container
+    image: busybox
+    command: ["sleep", "3600"]
+    ports:
+    - containerPort: 80

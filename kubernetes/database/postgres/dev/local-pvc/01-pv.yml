@@ -12,7 +12,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   local:
-    path: /run/media/bcueva/volumes/kubernetes/postgres
+    path: /run/media/bcueva/volumes/k8s/postgres
   nodeAffinity:
     required:
       nodeSelectorTerms:
