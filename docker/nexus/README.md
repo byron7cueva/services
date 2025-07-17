@@ -14,7 +14,11 @@ openssl x509 -in nexus.crt -text | grep -A1 "Subject Alternative Name"
 docker compose -f nexus.yml up -d
 sudo docker exec -it nexus cat /nexus-data/admin.password
 ```
+
+## Aplicar el certificado a todos los nodos
+
 scp nexus.crt user@node:/tmp/
+ssh user@node
 apk update
 apk add ca-certificates
 
@@ -28,6 +32,13 @@ update-ca-certificates
 
 openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt /usr/local/share/ca-certificates/nexus.crt
 
+Agregar host alias
+
+vi /etc/hosts
+
+Agregar
+
+192.168.0.102   nexus.local
 
 vi /etc/rancher/k3s/registries.yaml
 
@@ -43,9 +54,15 @@ configs:
       ca_file: "/usr/local/share/ca-certificates/nexus.crt"
 ```
 
+En nodos master
+
 rc-service k3s restart
+
+En nodos worker
+
 rc-service k3s-agent restart
 
+## Aplicar ceritficado al cluster
 
 kubectl create secret docker-registry sct-docker-nexus-reg \
   --docker-server=nexus.local:5001 \
@@ -54,9 +71,16 @@ kubectl create secret docker-registry sct-docker-nexus-reg \
   --docker-email=docker@local.com
 
 
+# Aplicar certificado a docker para construir y subir imagenes
 
 sudo mkdir -p /etc/docker/certs.d/nexus.local:5001
 sudo cp nexus.crt /etc/docker/certs.d/nexus.local:5001/ca.crt
 sudo systemctl restart docker
 
 docker login nexus.local:5001
+
+# Aplicar a la maquina fisica
+
+sudo cp nexus.crt /usr/local/share/ca-certificates/nexus.crt
+sudo update-ca-certificates
+

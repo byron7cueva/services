@@ -2,47 +2,52 @@
 
 ## Install kvm
 
-´´´bash
-sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
-´´´
+```bash
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager qemu-utils qemu-system-gui virt-viewer
+
+sudo kvm-ok
+qemu-system-x86_64 -display help
+sudo systemctl enable --now libvirtd
+sudo adduser $USER kvm
+```
 
 ## Create a new storage Pool
 
 Create a new directory.
 
-´´´bash
-mkdir /media/bcueva/volumes/kvm
-sudo chmod 755 /media/bcueva/volumes/kvm
-sudo chown libvirt-qemu:kvm /media/bcueva/volumes/kvm
-sudo chown libvirt-qemu:kvm /media/bcueva/volumes/iso
-sudo setfacl -m u:libvirt-qemu:x /media/bcueva
-sudo setfacl -m u:libvirt-qemu:x /media/bcueva/volumes
-´´´
+```bash
+mkdir /mnt/volumes/kvm
+sudo chmod 755 /mnt/volumes/kvm
+sudo chown libvirt-qemu:kvm /mnt/volumes/kvm
+sudo chown libvirt-qemu:kvm /mnt/volumes/iso
+sudo setfacl -m u:libvirt-qemu:x /mnt
+sudo setfacl -m u:libvirt-qemu:x /mnt/volumes
+```
 
 Define new Storage Pool
 
-´´´bash
-sudo virsh pool-define-as --name bc_pool --type dir --target /media/bcueva/volumes/kvm
-´´´
+```bash
+sudo virsh pool-define-as --name bc_pool --type dir --target /mnt/volumes/kvm
+```
 Build Pool
 
-´´´bash
+```bash
 sudo virsh pool-build bc_pool
-´´´
+```
 
 Start Pool
 
-´´´bash
+```bash
 sudo virsh pool-start bc_pool
 sudo virsh pool-autostart bc_pool
-´´´
+```
 
 Validation the new Pool
 
-´´´bash
+```bash
 sudo virsh pool-list --all
 sudo virsh pool-info bc_pool
-´´´
+```
 
 ## Configuracion de Red
 
@@ -74,8 +79,8 @@ sudo systemctl restart systemd-networkd.service
 Elimina el NAT por defecto y crea un nuevo "network" que use br0:
 
 ```bash
-sudo virsh net-destroy default
-sudo virsh net-undefine default
+#sudo virsh net-destroy default
+#sudo virsh net-undefine default
 
 cat <<EOF | sudo tee /etc/libvirt/qemu/networks/hostbridge.xml
 <network>
@@ -99,7 +104,7 @@ virt-install \
 --disk pool=bc_pool,size=20 \
 --os-variant generic \
 --network network=hostbridge,model=virtio \
---cdrom /media/bcueva/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
+--cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
 
 
@@ -110,7 +115,7 @@ virt-install \
 --disk pool=bc_pool,size=60 \
 --os-variant generic \
 --network network=hostbridge,model=virtio \
---cdrom /media/bcueva/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
+--cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
 
 
@@ -121,7 +126,7 @@ virt-install \
 --disk pool=bc_pool,size=60 \
 --os-variant generic \
 --network network=hostbridge,model=virtio \
---cdrom /media/bcueva/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
+--cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
 
 ## Instalar
@@ -219,7 +224,7 @@ virt-install \
 --disk pool=bc_pool,size=20 \
 --network bridge=virbr0,model=virtio \
 --os-variant generic \
---cdrom /media/bcueva/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
+--cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
 
 
@@ -266,3 +271,24 @@ helm install rancher rancher-latest/rancher \
   --set bootstrapPassword="admin"
 
 kubectl port-forward -n cattle-system svc/rancher 8443:443 --address 0.0.0.0
+
+
+----
+virsh net-list --all
+
+virsh net-start default
+virsh net-autostart default
+
+
+virt-install --name fedora-silverblue \
+--memory 6144 \
+--vcpus 4 \
+--disk pool=bc_pool,size=60 \
+--cpu host \
+--os-variant fedora-unknown \
+--network bridge=virbr0 \
+--graphics spice \
+--boot uefi \
+--virt-type kvm \
+--channel spicevmc \
+--cdrom /mnt/volumes/iso/Fedora-Silverblue-ostree-x86_64-42-1.1.iso

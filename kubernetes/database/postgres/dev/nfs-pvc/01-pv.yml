@@ -11,7 +11,9 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    path: /media/bcueva/volumes/nfs/postgres
-    server: 192.168.1.6
+    path: /postgres
+    server: 192.168.0.102
+  mountOptions:
+    - vers=4
 
   
