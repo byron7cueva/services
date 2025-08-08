@@ -57,7 +57,7 @@ sudo systemctl restart docker
 
 ```bash
 sudo apt-get update
-sudo apt-get -y install podman
+sudo apt -y  install podman uidmap slirp4netns
 sudo systemctl disable podman
 sudo systemctl disable podman.socket
 ```
