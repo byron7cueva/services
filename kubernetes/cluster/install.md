@@ -29,6 +29,7 @@ Define new Storage Pool
 ```bash
 sudo virsh pool-define-as --name bc_pool --type dir --target /mnt/volumes/kvm
 ```
+
 Build Pool
 
 ```bash
@@ -48,6 +49,10 @@ Validation the new Pool
 sudo virsh pool-list --all
 sudo virsh pool-info bc_pool
 ```
+
+### Delete pool
+
+sudo virsh pool-undefine -f bc_pool
 
 ## Configuracion de Red
 
@@ -107,7 +112,6 @@ virt-install \
 --cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
 
-
 virt-install \
 --name k3s-worker1 \
 --memory 6144 \
@@ -117,7 +121,6 @@ virt-install \
 --network network=hostbridge,model=virtio \
 --cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
-
 
 virt-install \
 --name k3s-worker2 \
@@ -130,13 +133,16 @@ virt-install \
 --graphics none
 
 ## Instalar
+
 Login root
 setup-alpine
 
 ## Configurar
+
 apk update && apk add curl
 
 ### Master
+
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik --write-kubeconfig-mode 644" sh -
 
 cat /var/lib/rancher/k3s/server/node-token
@@ -173,7 +179,6 @@ Guarda el archivo y reinicia el servicio SSH:
 
 service sshd restart
 
-
 scp root@192.168.0.103:/etc/rancher/k3s/k3s.yaml ~/.kube/config
 sed -i "s/127.0.0.1/192.168.0.103/" ~/.kube/config
 
@@ -181,13 +186,11 @@ sed -i "s/127.0.0.1/192.168.0.103/" ~/.kube/config
 
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
 
-
 kubectl apply -f ./metallb.yml
 
 kubectl logs -n metallb-system -l app=metallb,component=speaker
 kubectl delete pods -n metallb-system -l app=metallb,component=speaker
 kubectl get pods -A -o wide
-
 
 ## Instalar Ingress Controller Nginx
 
@@ -195,7 +198,6 @@ kubectl apply -f \
 https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/baremetal/deploy.yaml
 
 kubectl get pods -n ingress-nginx
-
 
 ## Run demo
 
@@ -208,13 +210,9 @@ kubectl get pods -n utils
 
 kubectl exec -n utils -it red -- ping demo.default.svc.cluster.local
 
-
-
-
 kubectl exec -n utils -it red -- nslookup demo.apps.svc.cluster.local
 
 kubectl exec -n utils -it red -- nc -vz demo.apps.svc.cluster.local 80
-
 
 Rancher
 
@@ -227,7 +225,6 @@ virt-install \
 --cdrom /mnt/volumes/iso/alpine-virt-3.22.0-x86_64.iso \
 --graphics none
 
-
 apk update
 apk add chrony tzdata
 
@@ -235,7 +232,6 @@ rc-update add chronyd default
 rc-service chronyd start
 
 chronyc tracking
-
 
 apk add curl
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --cluster-init" sh -
@@ -248,37 +244,34 @@ helm version
 
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 kubectl create namespace cert-manager
 
 helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --version v1.18.0 \
-  --set installCRDs=true
-
+ --namespace cert-manager \
+ --version v1.18.0 \
+ --set installCRDs=true
 
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 helm repo update
 kubectl create namespace cattle-system
 
 helm install rancher rancher-latest/rancher \
-  --namespace cattle-system \
-  --set hostname=rancher.local \
-  --set ingress.tls.source=secret \
-  --set bootstrapPassword="admin"
+ --namespace cattle-system \
+ --set hostname=rancher.local \
+ --set ingress.tls.source=secret \
+ --set bootstrapPassword="admin"
 
 kubectl port-forward -n cattle-system svc/rancher 8443:443 --address 0.0.0.0
 
+---
 
-----
 virsh net-list --all
 
 virsh net-start default
 virsh net-autostart default
-
 
 virt-install --name fedora-silverblue \
 --memory 6144 \
@@ -292,3 +285,27 @@ virt-install --name fedora-silverblue \
 --virt-type kvm \
 --channel spicevmc \
 --cdrom /mnt/volumes/iso/Fedora-Silverblue-ostree-x86_64-42-1.1.iso
+
+virt-install --name kali \
+--memory 4096 \
+--vcpus 4 \
+--disk pool=bc_pool,size=60 \
+--cpu host \
+--os-variant linux2024 \
+--network bridge=virbr0 \
+--video virtio \
+--graphics spice,listen=none \
+--virt-type kvm \
+--cdrom /mnt/containers/iso/kali-linux-2025.2-installer-amd64.iso
+
+virt-install --name fedora-cosmic \
+--memory 4096 \
+--vcpus 4 \
+--disk pool=bc_pool,size=60 \
+--cpu host \
+--os-variant linux2024 \
+--network bridge=virbr0 \
+--video virtio \
+--graphics spice,listen=none \
+--virt-type kvm \
+--cdrom /mnt/containers/iso/Fedora-COSMIC-Atomic-ostree-x86_64-42-1.1.iso
