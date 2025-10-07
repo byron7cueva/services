@@ -16,18 +16,18 @@ sudo adduser $USER kvm
 Create a new directory.
 
 ```bash
-mkdir /mnt/volumes/kvm
-sudo chmod 755 /mnt/volumes/kvm
-sudo chown libvirt-qemu:kvm /mnt/volumes/kvm
-sudo chown libvirt-qemu:kvm /mnt/volumes/iso
+mkdir /mnt/containers/kvm
+sudo chmod 755 /mnt/containers/kvm
+sudo chown libvirt-qemu:kvm /mnt/containers/kvm
+sudo chown libvirt-qemu:kvm /mnt/containers/iso
 sudo setfacl -m u:libvirt-qemu:x /mnt
-sudo setfacl -m u:libvirt-qemu:x /mnt/volumes
+sudo setfacl -m u:libvirt-qemu:x /mnt/containers
 ```
 
 Define new Storage Pool
 
 ```bash
-sudo virsh pool-define-as --name bc_pool --type dir --target /mnt/volumes/kvm
+sudo virsh pool-define-as --name bc_pool --type dir --target /mnt/containers/kvm
 ```
 
 Build Pool
